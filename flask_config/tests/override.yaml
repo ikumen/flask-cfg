@@ -1,0 +1,6 @@
+DEBUG: TRUE
+FOO: 'bar'
+ignore_me: 'because not uppercase'
+B: 2
+
+ANOTHER_SECRET:

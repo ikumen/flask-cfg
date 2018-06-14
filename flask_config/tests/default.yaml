@@ -1,0 +1,12 @@
+DEBUG: FALSE
+FOO: 'ack'
+ignore_me: 'yes because you are lowercase'
+A: 1
+
+SECRET:
+
+CURRENCIES:
+  - SYMBOL: 'BTC'
+    NAME: 'Bitcoin'
+  - SYMBOL: 'ETH'
+    NAME: 'Ethereum'
