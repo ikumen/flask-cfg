@@ -1,6 +1,6 @@
 import pytest
 
-from ..core import SimpleConfig
+from .. import SimpleConfig
 
 default_conf_paths = 'flask_config/tests/default.yaml'
 override_conf_paths = 'flask_config/tests/override.yaml'
