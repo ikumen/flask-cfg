@@ -4,8 +4,6 @@ import yaml
 
 from abc import ABCMeta, abstractmethod
 
-def hello():
-    print('hello')
 
 class AbstractConfig(object):
     """Configuration object that attempts to load config values from 

@@ -1,22 +1,22 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.txt", "r") as fh:
   long_description = fh.read()
 
 setuptools.setup(
-  name="flask_config",
-  version="0.0.1",
+  name="flask-cfg",
+  version="0.0.2",
   author="Thong Nguyen",
-  author_email="ikumen@gnoht.com",
+  author_email="thong@gnoht.com",
   description="A little package for loading Flask configurations from YAML files.",
   long_description=long_description,
   long_description_content_type="text/markdown",
-  url="https://github.com/ikumen/flask_config",
+  url="https://github.com/ikumen/flask-cfg",
   packages=setuptools.find_packages(),
   install_requires=['yaml'],
-  classifiers=(
+  classifiers=[
     "Programming Language :: Python :: 2",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-  ),
+  ],
 )

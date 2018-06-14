@@ -2,9 +2,9 @@ import pytest
 
 from .. import SimpleConfig
 
-default_conf_paths = 'flask_config/tests/default.yaml'
-override_conf_paths = 'flask_config/tests/override.yaml'
-secret_conf_paths = 'flask_config/tests/secret.yaml'
+default_conf_paths = 'flask_cfg/tests/default.yaml'
+override_conf_paths = 'flask_cfg/tests/override.yaml'
+secret_conf_paths = 'flask_cfg/tests/secret.yaml'
 
 def test_should_load_default_config():
     config = SimpleConfig(default_conf_paths=default_conf_paths).to_object()
