@@ -5,7 +5,7 @@ with open("README.txt", "r") as fh:
 
 setuptools.setup(
   name="flask-cfg",
-  version="0.0.3",
+  version="0.0.4",
   author="Thong Nguyen",
   author_email="thong@gnoht.com",
   description="A little package for loading Flask configurations from YAML files.",
