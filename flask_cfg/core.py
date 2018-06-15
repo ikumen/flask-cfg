@@ -30,7 +30,6 @@ class AbstractConfig(object):
         @param ignore_errors file path and missing values should be ignored if True
         """
         self.ignore_errors = ignore_errors
-        self.config_values = {}
 
         # Normalize all file paths to a single array.
         # Note: order is important as latter configs will override earlier.
@@ -40,7 +39,11 @@ class AbstractConfig(object):
             secret_conf_paths)
 
         # Load the config values, then resolve any missing values
-        self.config_values = self.resolve_missing_values(self._load_all_configs(config_paths, {}))
+        config_values = self.resolve_missing_values(self._load_all_configs(config_paths, {}))
+        
+        # For Flask config.from_object(config)
+        self.__dict__.update(config_values)
+
 
     def resolve_missing_values(self, values):
         """Resolve any missing config values.
@@ -49,14 +52,10 @@ class AbstractConfig(object):
         """
         unresolved = self._resolve([], values)
         if len(unresolved) > 0:
-            logging.warn("""
-                \n---------------------------
-                \nMissing values for:
-                \n{}
-                \n---------------------------
-                """.format(unresolved))
+            msg = "Unresolved values for: {}".format(unresolved)
+            logging.warn(msg)
             if not self.ignore_errors:
-                raise LookupError("Unresolved values: {}".format(unresolved))
+                raise LookupError(msg)
         return values
 
     
@@ -175,14 +174,6 @@ class AbstractConfig(object):
     def _is_valid_file(self, path):
         """Simple check to see if file path exists. Does not check for valid YAML format."""
         return isinstance(path, basestring) and os.path.isfile(path)
-
-    def to_object(self):
-        """Return config values as a simple object that Flask can understand."""
-        return self._Config(**self.config_values)
-
-    class _Config(object):
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
 
 
 class SimpleConfig(AbstractConfig):

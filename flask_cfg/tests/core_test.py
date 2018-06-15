@@ -7,7 +7,7 @@ override_conf_paths = 'flask_cfg/tests/override.yaml'
 secret_conf_paths = 'flask_cfg/tests/secret.yaml'
 
 def test_should_load_default_config():
-    config = SimpleConfig(default_conf_paths=default_conf_paths).to_object()
+    config = SimpleConfig(default_conf_paths=default_conf_paths)
 
     # validate loading config values in general
     assert hasattr(config, 'FOO') and getattr(config, 'FOO') == 'ack'
@@ -25,7 +25,7 @@ def test_should_load_default_config():
 
 def test_should_load_config_with_overrides():
     config = SimpleConfig(default_conf_paths=default_conf_paths,
-        override_conf_paths=override_conf_paths).to_object()
+        override_conf_paths=override_conf_paths)
 
     # make sure file specific configs are loaded
     assert hasattr(config, 'FOO') and hasattr(config, 'DEBUG') \
@@ -37,7 +37,7 @@ def test_should_load_config_with_overrides():
 def test_should_load_config_with_override_n_secrets():
     config = SimpleConfig(default_conf_paths=default_conf_paths,
         override_conf_paths=override_conf_paths,
-        secret_conf_paths=secret_conf_paths).to_object()
+        secret_conf_paths=secret_conf_paths)
 
     assert hasattr(config, 'FOO') and hasattr(config, 'DEBUG') \
         and hasattr(config, 'A') and hasattr(config, 'B') \

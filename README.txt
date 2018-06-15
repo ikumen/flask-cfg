@@ -17,10 +17,5 @@ this::
         secret_conf_paths='instance/local.yaml')
     app.config.from_object(config.to_object())
 
-Dependencies
-===========
-Here are some requirements:
-* [YAML](https://github.com/yaml/pyyaml)
-* [pytest](https://docs.pytest.org/en/latest/) for testing only
 
 
