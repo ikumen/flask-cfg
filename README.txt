@@ -9,13 +9,14 @@ additional configurations (e.g. from a database). Typical usage looks like
 this::
 
     from flask import Flask
-    from flask_cfg import AbstractConfig, SimpleConfig
+    from flask_cfg import SimpleConfig
 
     app = Flask() 
     config = SimpleConfig(default_conf_paths='default.yaml', 
         override_conf_paths='some/path/staging.yaml',
         secret_conf_paths='instance/local.yaml')
-    app.config.from_object(config.to_object())
+    app.config.from_object(config)
+
 
 
 

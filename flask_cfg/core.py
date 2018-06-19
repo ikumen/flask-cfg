@@ -39,27 +39,43 @@ class AbstractConfig(object):
             secret_conf_paths)
 
         # Load the config values, then resolve any missing values
-        config_values = self.resolve_missing_values(self._load_all_configs(config_paths, {}))
+        config_values = self.process_loaded_configs(self._load_all_configs(config_paths, {}))
         
         # For Flask config.from_object(config)
         self.__dict__.update(config_values)
 
+    def process_loaded_configs(self, values):
+        """Takes the loaded config values (from YAML files) and performs the
+        following clean up steps:
+        
+        1. remove all value keys that are not uppercase
+        2. resolve any keys with missing values
 
-    def resolve_missing_values(self, values):
-        """Resolve any missing config values.
+        Note: resolving missing values does not fail fast, we will collect
+        all missing values and report it to a post handler, then finally fail.
 
-        @param values dictionary of config values
+        @param values dictionary of raw, newly loaded config values
         """
-        unresolved = self._resolve([], values)
-        if len(unresolved) > 0:
-            msg = "Unresolved values for: {}".format(unresolved)
-            logging.warn(msg)
-            if not self.ignore_errors:
+        unresolved_value_keys = self._process_config_values([], values)
+        if len(unresolved_value_keys) > 0:
+            msg = "Unresolved values for: {}".format(unresolved_value_keys)
+            # Even though we will fail, there might be a situation when we want to 
+            # do something with the list of missing values, so pass it to a handler.
+            self.on_process_loaded_configs_failure(values, unresolved_value_keys)
+            if self.ignore_errors:
+                # If we're ignoring errors, at least log it
+                logging.warn(msg)
+            else:
+                # end program
                 raise LookupError(msg)
+        # All the config values were checked and everything looks good, 
+        # let's inform post handler for any additional work.
+        self.on_process_loaded_configs_complete(values)
+        
         return values
 
     
-    def _resolve(self, dict_path, values, unresolved=[]):
+    def _process_config_values(self, dict_path, values, unresolved=[]):
         """Attempts to resolve any config value that is missing (e.g. None).
 
         @param dict_path our current path as we traverse the values dict
@@ -78,23 +94,23 @@ class AbstractConfig(object):
                 # Found a missing value, try to resolve
                 if v is None:
                     path = (''.join(dict_path))[1:]
-                    resolved_value = self.handle_missing_value(k, values, path)
+                    resolved_value = self.resolve_missing_value(k, values, path)
                     if resolved_value is None:
                         unresolved.append(path)
                     else:
                         values[k] = resolved_value
                 # is config has value, and it's another dict, traverse it
                 elif hasattr(v, '__iter__'):
-                    self._resolve(dict_path, v, unresolved)
+                    self._process_config_values(dict_path, v, unresolved)
                 # again, update where we are in dict traversal
                 dict_path.pop()
         elif isinstance(values, list):
             for _ in values:
-                self._resolve(dict_path, _, unresolved)
+                self._process_config_values(dict_path, _, unresolved)
         return unresolved
 
     @abstractmethod
-    def handle_missing_value(self, k, values, dict_path):
+    def resolve_missing_value(self, k, values, dict_path):
         """Actual method where we handle missing value.
         
         @param k key of missing value
@@ -104,6 +120,25 @@ class AbstractConfig(object):
         """
         pass
 
+    def on_process_loaded_configs_complete(self, config_values):
+        """Hook that gets called when @process_loaded_configs completes regardless of failure.
+
+        Note: this hook will get called even if there are errors if ignore_errors is True.
+
+        @param config_values dictionary of values that were processed
+        """
+        pass
+
+    @abstractmethod
+    def on_process_loaded_configs_failure(self, config_values, unresolved_value_keys=None):
+        """Hook that gets called when @process_loaded_configs completes with failures.
+
+        Note: this hook will not get called if ignore_errors is True.
+
+        @param config_values dictionary of values that were processed
+        @param unresolved_value_keys path of keys in config_values that had missing values
+        """
+        pass
 
     def _load_all_configs(self, paths, values={}):
         """Loads configuration values for each of the files (from given paths), merging
