@@ -1,12 +1,18 @@
-DEBUG: FALSE
-FOO: 'ack'
-ignore_me: 'yes because you are lowercase'
-A: 1
+TRUE_VAL: TRUE
+FALSE_VAL: FALSE
+INT_VAL: 1
+STR_VAL: 'foo'
+igNore_ME: 'because key is not all uppercase'
+OVERRIDE_ME: 'hello'
 
-SECRET:
+MAP:
+  KEY1: 'value1'
+  KEY2: 'value2'
 
-CURRENCIES:
-  - SYMBOL: 'BTC'
-    NAME: 'Bitcoin'
-  - SYMBOL: 'ETH'
-    NAME: 'Ethereum'
+LIST:
+  - 'item1'
+  - 'item2'
+  - 'item3'
+
+MISSING_VAL:
+

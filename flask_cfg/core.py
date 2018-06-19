@@ -6,12 +6,14 @@ from abc import ABCMeta, abstractmethod
 
 
 class AbstractConfig(object):
+    __metaclass__ = ABCMeta
+
     """Configuration object that attempts to load config values from 
     YAML files. Implementing classes can optionally try to resolve any 
     missing values (useful in certain environments).
     """
     def __init__(self,
-                default_conf_paths='default.yaml',
+                default_conf_paths,
                 override_conf_paths=None,
                 secret_conf_paths=None,
                 ignore_errors=True):
@@ -30,7 +32,6 @@ class AbstractConfig(object):
         @param ignore_errors file path and missing values should be ignored if True
         """
         self.ignore_errors = ignore_errors
-
         # Normalize all file paths to a single array.
         # Note: order is important as latter configs will override earlier.
         config_paths = self._normalize_file_paths(
@@ -56,7 +57,7 @@ class AbstractConfig(object):
 
         @param values dictionary of raw, newly loaded config values
         """
-        unresolved_value_keys = self._process_config_values([], values)
+        unresolved_value_keys = self._process_config_values([], values, [])
         if len(unresolved_value_keys) > 0:
             msg = "Unresolved values for: {}".format(unresolved_value_keys)
             # Even though we will fail, there might be a situation when we want to 
@@ -68,13 +69,13 @@ class AbstractConfig(object):
             else:
                 # end program
                 raise LookupError(msg)
+
         # All the config values were checked and everything looks good, 
         # let's inform post handler for any additional work.
         self.on_process_loaded_configs_complete(values)
         
         return values
 
-    
     def _process_config_values(self, dict_path, values, unresolved=[]):
         """Attempts to resolve any config value that is missing (e.g. None).
 
@@ -120,6 +121,7 @@ class AbstractConfig(object):
         """
         pass
 
+    @abstractmethod
     def on_process_loaded_configs_complete(self, config_values):
         """Hook that gets called when @process_loaded_configs completes regardless of failure.
 
@@ -215,7 +217,13 @@ class SimpleConfig(AbstractConfig):
     def __init__(self, **kwargs):
         super(SimpleConfig, self).__init__(**kwargs)
 
-    """Config implementation that does NOT try to resolve any missing values
-    and simply ignores them."""
-    def handle_missing_value(self, k, values, dict_path):
+    def resolve_missing_value(self, k, values, dict_path):
         return None
+
+    def on_process_loaded_configs_failure(self, config_values, unresolved_value_keys=None):
+        pass
+
+    def on_process_loaded_configs_complete(self, config_values):
+        pass
+
+

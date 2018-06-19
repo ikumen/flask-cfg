@@ -1,6 +1,14 @@
-DEBUG: TRUE
-FOO: 'bar'
-ignore_me: 'because not uppercase'
-B: 2
+OVERRIDE_ME: 'goodbye'
 
-ANOTHER_SECRET:
+MAP:
+  KEY1: 'new value1'
+  KEY2: 'new value2'
+
+LIST:
+  - 'item1'
+  - 'new item2'
+  - 'item3'
+
+MISSING_VAL: 'not missing anymore'
+
+
